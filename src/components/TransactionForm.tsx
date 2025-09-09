@@ -1,52 +1,65 @@
 import { useState } from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PlusCircle, MinusCircle } from 'lucide-react';
-import { Category } from '@/types/financial';
+import { Category, Goal } from '@/types/financial';
 
 interface TransactionFormProps {
   categories: Category[];
-  onSubmit: (transaction: {
-    type: 'income' | 'expense';
-    amount: number;
-    description: string;
-    category: string;
-    date: string;
-  }) => void;
+  goals: Goal[];
+  onSubmit: (transaction: any) => void;
 }
 
-export function TransactionForm({ categories, onSubmit }: TransactionFormProps) {
-  const [type, setType] = useState<'income' | 'expense'>('expense');
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+export function TransactionForm({ categories, goals, onSubmit }: TransactionFormProps) {
+  const [formData, setFormData] = useState({
+    type: 'expense' as 'income' | 'expense',
+    amount: '',
+    description: '',
+    category: '',
+    date: new Date().toISOString().split('T')[0],
+    addToGoal: false,
+    goalId: '',
+    goalAmount: '',
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!amount || !description || !category) return;
+    if (!formData.type || !formData.amount || !formData.description || !formData.category) return;
 
-    onSubmit({
-      type,
-      amount: parseFloat(amount),
-      description,
-      category,
-      date,
+    const transactionData = {
+      type: formData.type,
+      amount: parseFloat(formData.amount),
+      description: formData.description,
+      category: formData.category,
+      date: formData.date,
+      ...(formData.addToGoal && formData.goalId && formData.goalAmount && {
+        goalId: formData.goalId,
+        goalAmount: parseFloat(formData.goalAmount),
+      }),
+    };
+
+    onSubmit(transactionData);
+
+    setFormData({
+      type: 'expense',
+      amount: '',
+      description: '',
+      category: '',
+      date: new Date().toISOString().split('T')[0],
+      addToGoal: false,
+      goalId: '',
+      goalAmount: '',
     });
-
-    // Reset form
-    setAmount('');
-    setDescription('');
-    setCategory('');
-    setDate(new Date().toISOString().split('T')[0]);
   };
 
-  const filteredCategories = categories.filter(c => c.type === type);
+  const filteredCategories = categories.filter(cat => cat.type === formData.type);
+  const availableGoals = goals.filter(goal => goal.targetAmount > goal.currentAmount);
 
   return (
     <Card className="bg-gradient-card border-0 shadow-financial">
@@ -57,8 +70,8 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
           <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
-              variant={type === 'expense' ? 'default' : 'outline'}
-              onClick={() => setType('expense')}
+              variant={formData.type === 'expense' ? 'default' : 'outline'}
+              onClick={() => setFormData({ ...formData, type: 'expense', addToGoal: false, goalId: '', goalAmount: '' })}
               className="h-12 text-sm font-medium"
             >
               <MinusCircle className="mr-2 h-4 w-4" />
@@ -66,8 +79,8 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
             </Button>
             <Button
               type="button"
-              variant={type === 'income' ? 'default' : 'outline'}
-              onClick={() => setType('income')}
+              variant={formData.type === 'income' ? 'default' : 'outline'}
+              onClick={() => setFormData({ ...formData, type: 'income' })}
               className="h-12 text-sm font-medium"
             >
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -81,8 +94,8 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
               id="amount"
               type="number"
               step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               placeholder="0,00"
               required
             />
@@ -92,8 +105,8 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
             <Label htmlFor="description">Descrição</Label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Descreva a transação..."
               required
               rows={2}
@@ -102,7 +115,10 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
           <div className="space-y-2">
             <Label htmlFor="category">Categoria</Label>
-            <Select value={category} onValueChange={setCategory} required>
+            <Select 
+              value={formData.category} 
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -124,16 +140,79 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
             <Input
               id="date"
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               required
             />
           </div>
 
+          {/* Goal allocation for income */}
+          {formData.type === 'income' && availableGoals.length > 0 && (
+            <div className="space-y-4 p-4 bg-secondary/20 rounded-lg border border-dashed border-secondary">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="addToGoal"
+                  checked={formData.addToGoal}
+                  onCheckedChange={(checked) => 
+                    setFormData({ 
+                      ...formData, 
+                      addToGoal: checked as boolean,
+                      goalId: '',
+                      goalAmount: '',
+                    })
+                  }
+                />
+                <Label htmlFor="addToGoal" className="text-sm font-medium">
+                  Adicionar à meta financeira
+                </Label>
+              </div>
+
+              {formData.addToGoal && (
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="goal">Meta de destino</Label>
+                    <Select
+                      value={formData.goalId}
+                      onValueChange={(value) => setFormData({ ...formData, goalId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma meta" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableGoals.map((goal) => (
+                          <SelectItem key={goal.id} value={goal.id}>
+                            {goal.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="goalAmount">Valor para a meta (R$)</Label>
+                    <Input
+                      id="goalAmount"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max={formData.amount}
+                      placeholder="0,00"
+                      value={formData.goalAmount}
+                      onChange={(e) => setFormData({ ...formData, goalAmount: e.target.value })}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Máximo: R$ {formData.amount || '0,00'}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <Button
             type="submit"
             className="w-full h-12 text-sm font-medium bg-gradient-primary hover:opacity-90 transition-opacity"
-            disabled={!amount || !description || !category}
+            disabled={!formData.amount || !formData.description || !formData.category}
           >
             Adicionar Transação
           </Button>

@@ -6,6 +6,8 @@ export interface Transaction {
   category: string;
   date: string;
   createdAt: string;
+  goalId?: string;
+  goalAmount?: number;
 }
 
 export interface Category {

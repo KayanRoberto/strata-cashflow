@@ -35,9 +35,17 @@ const Index = () => {
 
   const handleAddTransaction = (transactionData: any) => {
     addTransaction(transactionData);
+    
+    let toastMessage = `${transactionData.type === 'income' ? 'Receita' : 'Despesa'} de ${formatCurrency(transactionData.amount)} registrada.`;
+    
+    if (transactionData.goalId && transactionData.goalAmount) {
+      const goal = goals.find(g => g.id === transactionData.goalId);
+      toastMessage += ` ${formatCurrency(transactionData.goalAmount)} adicionado à meta "${goal?.name}".`;
+    }
+    
     toast({
       title: 'Transação adicionada',
-      description: `${transactionData.type === 'income' ? 'Receita' : 'Despesa'} de ${formatCurrency(transactionData.amount)} registrada.`,
+      description: toastMessage,
     });
   };
 
@@ -139,6 +147,7 @@ const Index = () => {
           <div className="lg:col-span-1 space-y-6">
             <TransactionForm
               categories={categories}
+              goals={goals}
               onSubmit={handleAddTransaction}
             />
             

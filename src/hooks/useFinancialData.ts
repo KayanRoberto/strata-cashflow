@@ -59,7 +59,18 @@ export const useFinancialData = () => {
     const updatedTransactions = [newTransaction, ...transactions];
     setTransactions(updatedTransactions);
     saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
-  }, [transactions, saveData]);
+
+    // If transaction has goal allocation, update the goal
+    if (newTransaction.goalId && newTransaction.goalAmount) {
+      const updatedGoals = goals.map(goal => 
+        goal.id === newTransaction.goalId 
+          ? { ...goal, currentAmount: goal.currentAmount + newTransaction.goalAmount! }
+          : goal
+      );
+      setGoals(updatedGoals);
+      saveData(STORAGE_KEYS.GOALS, updatedGoals);
+    }
+  }, [transactions, goals, saveData]);
 
   // Remove transaction
   const removeTransaction = useCallback((id: string) => {
