@@ -5,11 +5,18 @@ import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
 import { CategoryChart } from '@/components/CategoryChart';
 import { GoalProgress } from '@/components/GoalProgress';
+import { GoalModal } from '@/components/GoalModal';
+import { DepositModal } from '@/components/DepositModal';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { useToast } from '@/hooks/use-toast';
+import { Goal } from '@/types/financial';
 
 const Index = () => {
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+
   const {
     transactions,
     categories,
@@ -17,6 +24,7 @@ const Index = () => {
     addTransaction,
     removeTransaction,
     addGoal,
+    depositToGoal,
     getFinancialSummary,
     getCategorySummaries,
   } = useFinancialData();
@@ -43,10 +51,28 @@ const Index = () => {
   };
 
   const handleAddGoal = () => {
-    // TODO: Implement goal creation modal
+    setIsGoalModalOpen(true);
+  };
+
+  const handleCreateGoal = (goalData: Omit<Goal, 'id' | 'createdAt' | 'currentAmount'>) => {
+    addGoal(goalData);
     toast({
-      title: 'Em breve',
-      description: 'Funcionalidade de metas será implementada em breve.',
+      title: 'Meta criada',
+      description: `Caixinha "${goalData.name}" foi criada com sucesso!`,
+    });
+  };
+
+  const handleDepositClick = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setIsDepositModalOpen(true);
+  };
+
+  const handleDeposit = (goalId: string, amount: number) => {
+    depositToGoal(goalId, amount);
+    const goal = goals.find(g => g.id === goalId);
+    toast({
+      title: 'Depósito realizado',
+      description: `${formatCurrency(amount)} adicionado à meta "${goal?.name}".`,
     });
   };
 
@@ -119,6 +145,7 @@ const Index = () => {
             <GoalProgress
               goals={goals}
               onAddGoal={handleAddGoal}
+              onDepositClick={handleDepositClick}
             />
           </div>
 
@@ -137,6 +164,19 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      <GoalModal
+        open={isGoalModalOpen}
+        onOpenChange={setIsGoalModalOpen}
+        onSubmit={handleCreateGoal}
+      />
+
+      <DepositModal
+        open={isDepositModalOpen}
+        onOpenChange={setIsDepositModalOpen}
+        goal={selectedGoal}
+        onDeposit={handleDeposit}
+      />
     </div>
   );
 };

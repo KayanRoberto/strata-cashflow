@@ -82,6 +82,17 @@ export const useFinancialData = () => {
     saveData(STORAGE_KEYS.GOALS, updatedGoals);
   }, [goals, saveData]);
 
+  // Deposit to goal
+  const depositToGoal = useCallback((goalId: string, amount: number) => {
+    const updatedGoals = goals.map(goal => 
+      goal.id === goalId 
+        ? { ...goal, currentAmount: goal.currentAmount + amount }
+        : goal
+    );
+    setGoals(updatedGoals);
+    saveData(STORAGE_KEYS.GOALS, updatedGoals);
+  }, [goals, saveData]);
+
   // Calculate financial summary
   const getFinancialSummary = useCallback((): FinancialSummary => {
     const currentMonth = new Date().getMonth();
@@ -147,6 +158,7 @@ export const useFinancialData = () => {
     addTransaction,
     removeTransaction,
     addGoal,
+    depositToGoal,
     getFinancialSummary,
     getCategorySummaries,
   };
