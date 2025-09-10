@@ -96,30 +96,30 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/40 bg-gradient-card">
-        <div className="container mx-auto px-4 py-6">
+      {/* Header - Mobile Optimized */}
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-gradient-card backdrop-blur-sm">
+        <div className="container mx-auto mobile-padding py-4 md:py-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary text-white">
-              <PiggyBank className="h-6 w-6" />
+            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-gradient-primary text-white touch-target">
+              <PiggyBank className="h-5 w-5 md:h-6 md:w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Controlador Financeiro</h1>
-              <p className="text-sm text-muted-foreground">Gerencie suas finanças de forma inteligente</p>
+              <h1 className="text-xl md:text-2xl font-bold text-foreground">Controlador Financeiro</h1>
+              <p className="text-xs md:text-sm text-muted-foreground">Gerencie suas finanças de forma inteligente</p>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Financial Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <main className="container mx-auto mobile-padding py-6 md:py-8 pb-safe">
+        {/* Financial Summary Cards - Mobile Optimized */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 mobile-gap gap-4 md:gap-6 mb-6 md:mb-8">
           <FinancialCard
             title="Saldo Total"
             value={formatCurrency(summary.balance)}
             change={`${summary.balance >= 0 ? '+' : ''}${formatCurrency(summary.balance)}`}
             changeType={summary.balance >= 0 ? 'positive' : 'negative'}
-            icon={<Wallet className="h-6 w-6" />}
+            icon={<Wallet className="h-5 w-5 md:h-6 md:w-6" />}
             gradient={summary.balance >= 0 ? 'success' : 'danger'}
           />
           
@@ -128,7 +128,7 @@ const Index = () => {
             value={formatCurrency(summary.monthlyIncome)}
             change={`Total: ${formatCurrency(summary.totalIncome)}`}
             changeType="positive"
-            icon={<TrendingUp className="h-6 w-6" />}
+            icon={<TrendingUp className="h-5 w-5 md:h-6 md:w-6" />}
             gradient="success"
           />
           
@@ -137,7 +137,7 @@ const Index = () => {
             value={formatCurrency(summary.monthlyExpenses)}
             change={`Total: ${formatCurrency(summary.totalExpenses)}`}
             changeType="negative"
-            icon={<TrendingDown className="h-6 w-6" />}
+            icon={<TrendingDown className="h-5 w-5 md:h-6 md:w-6" />}
             gradient="danger"
           />
           
@@ -146,15 +146,15 @@ const Index = () => {
             value={formatCurrency(summary.monthlyBalance)}
             change={`${summary.monthlyBalance >= 0 ? '+' : ''}${formatCurrency(summary.monthlyBalance)}`}
             changeType={summary.monthlyBalance >= 0 ? 'positive' : 'negative'}
-            icon={<DollarSign className="h-6 w-6" />}
+            icon={<DollarSign className="h-5 w-5 md:h-6 md:w-6" />}
             gradient={summary.monthlyBalance >= 0 ? 'success' : 'warning'}
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-1 space-y-6">
+        {/* Main Content - Mobile Stack Layout */}
+        <div className="space-y-6 md:space-y-8">
+          {/* Mobile: Stack all components vertically */}
+          <div className="lg:hidden space-y-6">
             <TransactionForm
               categories={categories}
               goals={goals}
@@ -166,20 +166,46 @@ const Index = () => {
               onAddGoal={handleAddGoal}
               onDepositClick={handleDepositClick}
             />
-          </div>
-
-          {/* Middle Column */}
-          <div className="lg:col-span-1 space-y-6">
+            
             <CategoryChart data={categorySummaries} />
-          </div>
-
-          {/* Right Column */}
-          <div className="lg:col-span-1 space-y-6">
+            
             <TransactionList
-              transactions={transactions.slice(0, 10)} // Show last 10 transactions
+              transactions={transactions.slice(0, 10)}
               categories={categories}
               onRemove={handleRemoveTransaction}
             />
+          </div>
+
+          {/* Desktop: Original 3-column layout */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-8">
+            {/* Left Column */}
+            <div className="lg:col-span-1 space-y-6">
+              <TransactionForm
+                categories={categories}
+                goals={goals}
+                onSubmit={handleAddTransaction}
+              />
+              
+              <GoalProgress
+                goals={goals}
+                onAddGoal={handleAddGoal}
+                onDepositClick={handleDepositClick}
+              />
+            </div>
+
+            {/* Middle Column */}
+            <div className="lg:col-span-1 space-y-6">
+              <CategoryChart data={categorySummaries} />
+            </div>
+
+            {/* Right Column */}
+            <div className="lg:col-span-1 space-y-6">
+              <TransactionList
+                transactions={transactions.slice(0, 10)}
+                categories={categories}
+                onRemove={handleRemoveTransaction}
+              />
+            </div>
           </div>
         </div>
       </main>

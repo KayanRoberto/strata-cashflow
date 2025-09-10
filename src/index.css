@@ -63,6 +63,11 @@ All colors MUST be HSL.
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
+    /* Mobile optimizations */
+    --mobile-padding: 1rem;
+    --mobile-gap: 0.75rem;
+    --touch-target: 44px;
+
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -135,5 +140,25 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Disable text selection on mobile for better UX */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile-first responsive utilities */
+  @media (max-width: 768px) {
+    .mobile-padding {
+      @apply p-4;
+    }
+    
+    .mobile-gap {
+      @apply gap-3;
+    }
+    
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
   }
 }
