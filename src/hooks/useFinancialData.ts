@@ -14,6 +14,7 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: '4', name: 'Saúde', color: '#96CEB4', icon: '💊', type: 'expense' },
   { id: '5', name: 'Educação', color: '#FFEAA7', icon: '📚', type: 'expense' },
   { id: '6', name: 'Lazer', color: '#DDA0DD', icon: '🎉', type: 'expense' },
+  { id: '10', name: 'Poupança/Metas', color: '#8B5CF6', icon: '🎯', type: 'expense' },
   { id: '7', name: 'Salário', color: '#55A3FF', icon: '💰', type: 'income' },
   { id: '8', name: 'Freelance', color: '#26D0CE', icon: '💻', type: 'income' },
   { id: '9', name: 'Investimentos', color: '#FFA726', icon: '📈', type: 'income' },
@@ -60,7 +61,7 @@ export const useFinancialData = () => {
     setTransactions(updatedTransactions);
     saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
 
-    // If transaction has goal allocation, update the goal
+    // If transaction has goal allocation, update the goal and create expense transaction
     if (newTransaction.goalId && newTransaction.goalAmount) {
       const updatedGoals = goals.map(goal => 
         goal.id === newTransaction.goalId 
@@ -69,6 +70,22 @@ export const useFinancialData = () => {
       );
       setGoals(updatedGoals);
       saveData(STORAGE_KEYS.GOALS, updatedGoals);
+
+      // Create expense transaction for the goal allocation
+      const goalExpenseTransaction: Transaction = {
+        id: (Date.now() + 1).toString(), // Different ID from the income transaction
+        type: 'expense',
+        amount: newTransaction.goalAmount,
+        description: `Depósito na meta: ${goals.find(g => g.id === newTransaction.goalId)?.name}`,
+        category: 'Poupança/Metas',
+        date: newTransaction.date,
+        createdAt: new Date().toISOString(),
+        goalId: newTransaction.goalId,
+      };
+
+      const updatedTransactionsWithGoal = [goalExpenseTransaction, ...updatedTransactions];
+      setTransactions(updatedTransactionsWithGoal);
+      saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactionsWithGoal);
     }
   }, [transactions, goals, saveData]);
 
@@ -102,7 +119,24 @@ export const useFinancialData = () => {
     );
     setGoals(updatedGoals);
     saveData(STORAGE_KEYS.GOALS, updatedGoals);
-  }, [goals, saveData]);
+
+    // Create expense transaction for the manual deposit
+    const goalName = goals.find(g => g.id === goalId)?.name || 'Meta';
+    const expenseTransaction: Transaction = {
+      id: Date.now().toString(),
+      type: 'expense',
+      amount: amount,
+      description: `Depósito manual na meta: ${goalName}`,
+      category: 'Poupança/Metas',
+      date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
+      goalId: goalId,
+    };
+
+    const updatedTransactions = [expenseTransaction, ...transactions];
+    setTransactions(updatedTransactions);
+    saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
+  }, [goals, transactions, saveData]);
 
   // Calculate financial summary
   const getFinancialSummary = useCallback((): FinancialSummary => {
