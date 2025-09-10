@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Goal } from '@/types/financial';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -11,21 +12,36 @@ interface DepositModalProps {
   onOpenChange: (open: boolean) => void;
   goal: Goal | null;
   onDeposit: (goalId: string, amount: number) => void;
+  onWithdraw: (goalId: string, amount: number) => void;
 }
 
-export function DepositModal({ open, onOpenChange, goal, onDeposit }: DepositModalProps) {
-  const [amount, setAmount] = useState('');
+export function DepositModal({ open, onOpenChange, goal, onDeposit, onWithdraw }: DepositModalProps) {
+  const [depositAmount, setDepositAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!goal || !amount) return;
+    if (!goal || !depositAmount) return;
 
-    const depositAmount = parseFloat(amount);
-    if (depositAmount <= 0) return;
+    const amount = parseFloat(depositAmount);
+    if (amount <= 0) return;
 
-    onDeposit(goal.id, depositAmount);
-    setAmount('');
+    onDeposit(goal.id, amount);
+    setDepositAmount('');
+    onOpenChange(false);
+  };
+
+  const handleWithdraw = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!goal || !withdrawAmount) return;
+
+    const amount = parseFloat(withdrawAmount);
+    if (amount <= 0 || amount > goal.currentAmount) return;
+
+    onWithdraw(goal.id, amount);
+    setWithdrawAmount('');
     onOpenChange(false);
   };
 
@@ -39,9 +55,9 @@ export function DepositModal({ open, onOpenChange, goal, onDeposit }: DepositMod
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gradient-card border-0 shadow-financial">
         <DialogHeader>
-          <DialogTitle>Depositar na Meta</DialogTitle>
+          <DialogTitle>Gerenciar Meta</DialogTitle>
           <DialogDescription>
-            Adicione dinheiro à sua caixinha "{goal.name}"
+            Adicione ou remova dinheiro da sua caixinha "{goal.name}"
           </DialogDescription>
         </DialogHeader>
         
@@ -58,32 +74,80 @@ export function DepositModal({ open, onOpenChange, goal, onDeposit }: DepositMod
           </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Valor do Depósito (R$)</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="0,00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-            />
-          </div>
+        <Tabs defaultValue="deposit" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="deposit">Adicionar</TabsTrigger>
+            <TabsTrigger value="withdraw">Remover</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="deposit" className="space-y-4">
+            <form onSubmit={handleDeposit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="depositAmount">Valor do Depósito (R$)</Label>
+                <Input
+                  id="depositAmount"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="0,00"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  required
+                />
+              </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit">Depositar</Button>
-          </DialogFooter>
-        </form>
+              <div className="flex gap-2 justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">Depositar</Button>
+              </div>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="withdraw" className="space-y-4">
+            <form onSubmit={handleWithdraw} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="withdrawAmount">Valor da Retirada (R$)</Label>
+                <Input
+                  id="withdrawAmount"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={goal.currentAmount}
+                  placeholder="0,00"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Máximo disponível: {formatCurrency(goal.currentAmount)}
+                </p>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="destructive"
+                  disabled={goal.currentAmount === 0}
+                >
+                  Retirar
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

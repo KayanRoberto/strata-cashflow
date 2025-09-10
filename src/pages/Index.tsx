@@ -25,6 +25,7 @@ const Index = () => {
     removeTransaction,
     addGoal,
     depositToGoal,
+    removeFromGoal,
     getFinancialSummary,
     getCategorySummaries,
   } = useFinancialData();
@@ -81,6 +82,15 @@ const Index = () => {
     toast({
       title: 'Depósito realizado',
       description: `${formatCurrency(amount)} adicionado à meta "${goal?.name}".`,
+    });
+  };
+
+  const handleWithdraw = (goalId: string, amount: number) => {
+    removeFromGoal(goalId, amount);
+    const goal = goals.find(g => g.id === goalId);
+    toast({
+      title: 'Retirada realizada',
+      description: `${formatCurrency(amount)} removido da meta "${goal?.name}".`,
     });
   };
 
@@ -185,6 +195,7 @@ const Index = () => {
         onOpenChange={setIsDepositModalOpen}
         goal={selectedGoal}
         onDeposit={handleDeposit}
+        onWithdraw={handleWithdraw}
       />
     </div>
   );

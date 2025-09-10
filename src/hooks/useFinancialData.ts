@@ -138,6 +138,37 @@ export const useFinancialData = () => {
     saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
   }, [goals, transactions, saveData]);
 
+  // Remove from goal
+  const removeFromGoal = useCallback((goalId: string, amount: number) => {
+    const goal = goals.find(g => g.id === goalId);
+    if (!goal || goal.currentAmount < amount) return;
+
+    const updatedGoals = goals.map(goal => 
+      goal.id === goalId 
+        ? { ...goal, currentAmount: Math.max(0, goal.currentAmount - amount) }
+        : goal
+    );
+    setGoals(updatedGoals);
+    saveData(STORAGE_KEYS.GOALS, updatedGoals);
+
+    // Create income transaction for the withdrawal
+    const goalName = goal.name;
+    const incomeTransaction: Transaction = {
+      id: Date.now().toString(),
+      type: 'income',
+      amount: amount,
+      description: `Retirada da meta: ${goalName}`,
+      category: 'Poupança/Metas',
+      date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
+      goalId: goalId,
+    };
+
+    const updatedTransactions = [incomeTransaction, ...transactions];
+    setTransactions(updatedTransactions);
+    saveData(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
+  }, [goals, transactions, saveData]);
+
   // Calculate financial summary
   const getFinancialSummary = useCallback((): FinancialSummary => {
     const currentMonth = new Date().getMonth();
@@ -204,6 +235,7 @@ export const useFinancialData = () => {
     removeTransaction,
     addGoal,
     depositToGoal,
+    removeFromGoal,
     getFinancialSummary,
     getCategorySummaries,
   };
