@@ -7,7 +7,12 @@ import { CategoryChart } from '@/components/CategoryChart';
 import { GoalProgress } from '@/components/GoalProgress';
 import { GoalModal } from '@/components/GoalModal';
 import { DepositModal } from '@/components/DepositModal';
+import { UserLevel } from '@/components/UserLevel';
+import { AchievementCard } from '@/components/AchievementCard';
+import { PredictionCard } from '@/components/PredictionCard';
 import { useFinancialData } from '@/hooks/useFinancialData';
+import { useGamification } from '@/hooks/useGamification';
+import { usePredictions } from '@/hooks/usePredictions';
 import { formatCurrency } from '@/lib/formatters';
 import { useToast } from '@/hooks/use-toast';
 import { Goal } from '@/types/financial';
@@ -33,6 +38,10 @@ const Index = () => {
   const { toast } = useToast();
   const summary = getFinancialSummary();
   const categorySummaries = getCategorySummaries();
+  
+  // Gamification and predictions
+  const { achievements, userStats, checkAchievements, getRecentAchievements } = useGamification(transactions, goals);
+  const { predictions } = usePredictions(transactions, goals);
 
   const handleAddTransaction = (transactionData: any) => {
     addTransaction(transactionData);
@@ -65,6 +74,17 @@ const Index = () => {
 
   const handleCreateGoal = (goalData: Omit<Goal, 'id' | 'createdAt' | 'currentAmount'>) => {
     addGoal(goalData);
+    
+    // Check for new achievements
+    const newAchievements = checkAchievements();
+    newAchievements.forEach(achievement => {
+      toast({
+        title: '🏆 Conquista Desbloqueada!',
+        description: `${achievement.icon} ${achievement.title}: ${achievement.description}`,
+        duration: 5000,
+      });
+    });
+    
     toast({
       title: 'Meta criada',
       description: `Caixinha "${goalData.name}" foi criada com sucesso!`,
@@ -79,6 +99,17 @@ const Index = () => {
   const handleDeposit = (goalId: string, amount: number) => {
     depositToGoal(goalId, amount);
     const goal = goals.find(g => g.id === goalId);
+    
+    // Check for new achievements
+    const newAchievements = checkAchievements();
+    newAchievements.forEach(achievement => {
+      toast({
+        title: '🏆 Conquista Desbloqueada!',
+        description: `${achievement.icon} ${achievement.title}: ${achievement.description}`,
+        duration: 5000,
+      });
+    });
+    
     toast({
       title: 'Depósito realizado',
       description: `${formatCurrency(amount)} adicionado à meta "${goal?.name}".`,
@@ -150,6 +181,37 @@ const Index = () => {
             gradient={summary.monthlyBalance >= 0 ? 'success' : 'warning'}
           />
         </div>
+
+        {/* User Level and Achievements */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
+          <div className="lg:col-span-2">
+            <UserLevel userStats={userStats} />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Conquistas Recentes</h3>
+            {getRecentAchievements().slice(0, 3).map(achievement => (
+              <AchievementCard key={achievement.id} achievement={achievement} />
+            ))}
+            {getRecentAchievements().length === 0 && (
+              <div className="text-center text-muted-foreground text-sm py-4">
+                <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                Complete suas primeiras metas para desbloquear conquistas!
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Predictions */}
+        {predictions.length > 0 && (
+          <div className="mb-6 md:mb-8">
+            <h3 className="text-lg font-semibold mb-4">Previsões Inteligentes</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {predictions.slice(0, 6).map((prediction, index) => (
+                <PredictionCard key={index} prediction={prediction} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Main Content - Mobile Stack Layout */}
         <div className="space-y-6 md:space-y-8">
