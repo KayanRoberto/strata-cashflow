@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Wallet, Target, DollarSign, PiggyBank, Award, TrendingDownIcon } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { FinancialCard } from '@/components/FinancialCard';
 import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
@@ -143,6 +144,7 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Controle inteligente</p>
               </div>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
