@@ -140,7 +140,7 @@ const Index = () => {
                 <PiggyBank className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold text-foreground">Finanças</h1>
+                <h1 className="text-2xl font-semibold text-foreground">Bolso Aberto</h1>
                 <p className="text-sm text-muted-foreground">Controle inteligente</p>
               </div>
             </div>
