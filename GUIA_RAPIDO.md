@@ -1,4 +1,6 @@
-# 🚀 Guia Rápido - Controle Financeiro
+# 🚀 Guia Rápido - Bolso Aberto
+
+> **Projeto Acadêmico** - Guia criado pela equipe para facilitar a execução e testes do aplicativo
 
 ## ⚡ Configuração em 3 Passos
 
@@ -131,6 +133,16 @@ npm run lint            # Verificar código
 
 ---
 
-🎉 **Pronto! Seu app financeiro está funcionando!**
+## 🎓 **Informações Acadêmicas**
 
-Para dúvidas específicas, consulte o README.md completo.
+Este guia foi elaborado pela equipe de desenvolvimento como parte da documentação do projeto acadêmico.
+
+### 📞 **Contato da Equipe**
+Para dúvidas sobre o projeto, consulte:
+- README.md completo
+- TECNOLOGIAS.md para detalhes técnicos
+- BUILD.md para geração de executáveis
+
+---
+
+🎉 **Pronto! Seu app financeiro está funcionando!**

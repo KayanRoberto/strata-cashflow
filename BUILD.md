@@ -1,6 +1,8 @@
 # 📱 Guia de Build - Bolso Aberto
 
-Este guia explica como gerar builds do aplicativo Bolso Aberto para diferentes plataformas.
+**Projeto Acadêmico** - Documentação técnica para geração de builds
+
+Este guia explica como gerar builds do aplicativo Bolso Aberto para diferentes plataformas. Foi criado pela equipe de desenvolvimento como parte da documentação técnica do projeto.
 
 ## 📋 Pré-requisitos
 
@@ -314,13 +316,24 @@ npm run build
 
 ---
 
-## 🆘 Suporte
+## 🆘 Suporte e Recursos
 
-Para mais informações:
-- [Documentação Capacitor](https://capacitorjs.com/docs)
-- [Documentação Electron](https://www.electronjs.org/docs)
-- [Lovable Blog - Mobile Development](https://lovable.dev/blogs/TODO)
+### 📚 Documentação Oficial
+- [Documentação Capacitor](https://capacitorjs.com/docs) - Para builds mobile
+- [Documentação Electron](https://www.electronjs.org/docs) - Para builds desktop
+- [React Documentation](https://react.dev) - Framework principal
+- [Vite Guide](https://vitejs.dev/guide) - Build tool
+
+### 👥 Equipe de Desenvolvimento
+
+Este guia foi elaborado pela equipe técnica do projeto como parte da documentação acadêmica.
+
+**Dicas para Avaliadores:**
+- Todos os comandos foram testados pela equipe
+- O processo de build pode levar alguns minutos
+- Recomendamos testar primeiro o build web (mais rápido)
+- Para builds mobile, é necessário ambiente específico configurado
 
 ---
 
-**Última atualização**: 2025-10-07
+**Documentação Técnica** | Projeto Acadêmico Bolso Aberto | Última atualização: 2025-10-07

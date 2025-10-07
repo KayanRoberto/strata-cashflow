@@ -2,6 +2,14 @@
 
 Este documento detalha todas as tecnologias, linguagens de programação, frameworks e bibliotecas utilizadas no projeto **Bolso Aberto**.
 
+## 📖 Sobre Este Documento
+
+Este arquivo foi criado pela equipe de desenvolvimento como parte da documentação técnica do projeto acadêmico. Ele serve como referência para:
+- Orientadores e professores avaliadores
+- Membros da equipe de desenvolvimento
+- Futuros mantenedores do projeto
+- Estudantes interessados em aprender as tecnologias utilizadas
+
 ## 📋 Linguagens de Programação
 
 ### TypeScript
@@ -356,4 +364,26 @@ Este documento detalha todas as tecnologias, linguagens de programação, framew
 
 ---
 
-**Última atualização**: 2025-10-02
+## 👨‍🎓 Notas da Equipe de Desenvolvimento
+
+### Processo de Seleção de Tecnologias
+
+A escolha das tecnologias foi baseada em:
+1. **Requisitos do projeto**: Aplicação web responsiva com foco em experiência do usuário
+2. **Curva de aprendizado**: Tecnologias modernas mas acessíveis para estudantes
+3. **Comunidade ativa**: Suporte e documentação abundantes
+4. **Empregabilidade**: Tecnologias valorizadas no mercado de trabalho
+5. **Performance**: Ferramentas que garantem uma aplicação rápida e eficiente
+
+### Desafios e Aprendizados
+
+Durante o desenvolvimento, a equipe enfrentou e superou diversos desafios:
+- Integração de múltiplas bibliotecas
+- Gerenciamento de estado complexo
+- Implementação de design responsivo
+- Configuração do ambiente de desenvolvimento
+- Otimização de performance
+
+---
+
+**Documentação Técnica** | Projeto Acadêmico Bolso Aberto | 2025

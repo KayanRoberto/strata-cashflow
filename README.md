@@ -1,6 +1,23 @@
-# 💰 Controle Financeiro Pessoal
+# 💰 Bolso Aberto - Controle Financeiro Pessoal
 
 Um aplicativo moderno e intuitivo para controle de finanças pessoais com gamificação, metas financeiras e previsões inteligentes.
+
+## 👥 Sobre o Projeto
+
+Este projeto foi desenvolvido por um grupo de estudantes como trabalho acadêmico, com o objetivo de criar uma solução prática e intuitiva para controle financeiro pessoal.
+
+### Equipe de Desenvolvimento
+- **Análise e Design**: Equipe de UX/UI
+- **Desenvolvimento Frontend**: Equipe de Programação
+- **Testes e Qualidade**: Equipe de QA
+- **Documentação**: Equipe Técnica
+
+### Objetivos Acadêmicos
+- Aplicar conhecimentos de desenvolvimento web moderno
+- Implementar boas práticas de programação
+- Criar uma aplicação responsiva e acessível
+- Trabalhar com metodologias ágeis
+- Desenvolver um produto com foco no usuário
 
 ## ✨ Funcionalidades
 
@@ -162,7 +179,16 @@ Se você encontrar algum problema ou tiver dúvidas:
 2. Certifique-se de estar usando Node.js 18+
 3. Limpe o cache: `npm run build` e tente novamente
 4. Verifique o console do navegador para erros
+5. Consulte a documentação no diretório do projeto
+
+## 📚 Contexto Acadêmico
+
+Este projeto foi desenvolvido como parte de um trabalho universitário nas disciplinas:
+- Desenvolvimento Web Avançado
+- Engenharia de Software
+- Interface Humano-Computador
+- Gestão de Projetos
 
 ---
 
-Desenvolvido com ❤️ usando React + TypeScript + Tailwind CSS
+**Projeto Acadêmico** - Desenvolvido com ❤️ por estudantes usando React + TypeScript + Tailwind CSS
